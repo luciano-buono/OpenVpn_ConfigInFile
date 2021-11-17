@@ -1,3 +1,11 @@
+from argparse import ArgumentParser
+
+#1) Pide input file y genera el outfile name
+parser = ArgumentParser()
+parser.add_argument('-f','--file', type=str, required=True)
+user = vars(parser.parse_args())["file"]
+
+
 #Leer el template
 def readTemplate(template):
     with open(template, 'r') as f:
@@ -6,20 +14,16 @@ def readTemplate(template):
 
 # Change the cert and key
 def setCert(template, cert, key):
-    flag = False
     template = readTemplate(template)
-    # print(template)
-    for row in template.split("\n"):
-        # Search for the cert and replace it
-        # print(row)
-        if "<cert>" in row:
-            flag = True
-        if flag:
-            print(row)
-            if "</cert>" in row:
-                flag = False
-            else:
-                row = row.replace("<cert>", cert)
+    filename = f"C:/Users/Usuario/Desktop/{user}.ovpn"
+    with open(filename, 'w') as f:
+        for row in template.split("\n"):
+            f.writelines(row+"\n")
+            # Search for the cert and replace it
+            if "<cert>" in row:
+                f.writelines(cert)
+            if "<key>" in row:
+                f.writelines(key)
     return template
 
 def getCert(cert):
@@ -51,9 +55,9 @@ def getKey(key):
     return data
 
 def main():
-    # template = readTemplate("template.ovpn")
-    cert = getCert("cert.crt")
-    key = getKey("key.key")
+    print("Creating the .ovpn file of",user)
+    cert = getCert(f"{user}.crt")
+    key = getKey(f"{user}.key")
     setCert("template.ovpn", cert, key)
 
 
